@@ -59,6 +59,9 @@ public function debug()
 
         try {
             dd(
+                // 获取分类下所有品牌
+                $app->brand->brands('ENGINE_OIL'),
+
                 // 配件分类
                 $app->category->categories(),
 
