@@ -4,6 +4,7 @@ namespace CarParts\Kernel\Http;
 
 use CarParts\Kernel\Support\Collection;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -72,6 +73,10 @@ class Response extends GuzzleResponse
      */
     public function toCollection()
     {
+        $outParams = $this->toArray();
+        if(isset($outParams['meta'])){
+            return new LengthAwarePaginator($outParams['data'],$outParams['meta']['total'],$outParams['meta']['per_page'],$outParams['meta']['current_page']);
+        }
         return new Collection($this->toArray());
     }
 
