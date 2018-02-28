@@ -32,19 +32,6 @@ class Client extends BaseClient
     }
 
     /**
-     * 车型推荐商品（分类编排）
-     * @param string $vehicleId
-     * @param array $params
-     * @return Collection
-     */
-    public function recommendItemsGroupByCategory($vehicleId, $params = [])
-    {
-        $params = array_merge($params, ['vehicle_id' => $vehicleId]);
-
-        return $this->httpGet('api/v1/items/group_by_category/recommend', $params);
-    }
-
-    /**
      * 商品详情
      * @param string $id 商品 ID
      * @return Collection

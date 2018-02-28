@@ -74,6 +74,9 @@ public function debug()
                 // 车辆销售版本列表
                 $app->vehicle->vehicles(292),
 
+                // 车辆销售版本详情
+                $app->vehicle->detail('52c7ceba'),
+
                 // 根据 VIN 码获取车型信息
                 $app->vehicle->findByVIN('LVRHDFACXFN377424'),
 
@@ -82,9 +85,6 @@ public function debug()
 
                 // 车型推荐商品（分类编排）
                 $app->item->itemsGroupByCategory('b41ba195'),
-
-                // 车型推荐商品（分类编排）
-                $app->item->recommendItemsGroupByCategory('b41ba195', ['categories' => 'ENGINE_OIL,OIL_FILTER']),
 
                 // 商品详情
                 $app->item->detail('e468c069'),

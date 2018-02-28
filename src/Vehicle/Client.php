@@ -21,6 +21,16 @@ class Client extends BaseClient
     }
 
     /**
+     * 车辆销售版本详情
+     * @param $id
+     * @return Collection
+     */
+    public function detail($id)
+    {
+        return $this->httpGet('api/v1/vehicles/' . $id);
+    }
+
+    /**
      * 车辆销售版本列表
      * @param $modelId
      * @return Collection
