@@ -26,9 +26,19 @@ class Client extends BaseClient
      * @param array $params
      * @return Collection
      */
-    public function itemsGroupByCategory($vehicleId)
+    public function itemsGroupByCategory($vehicleId, $categories = [])
     {
-        return $this->httpGet('api/v1/items/group_by_category', ['vehicle_id' => $vehicleId]);
+        $params = [
+            'vehicle_id' => $vehicleId
+        ];
+
+        $categoriesStr = implode(',', $categories);
+
+        if ($categoriesStr) {
+            $params['categories'] = $categoriesStr;
+        }
+
+        return $this->httpGet('api/v1/items/group_by_category', $params);
     }
 
     /**
