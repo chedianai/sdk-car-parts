@@ -21,6 +21,17 @@ class Client extends BaseClient
     }
 
     /**
+     * 根据 ID 列表获取配件列表
+     * @param array $ids ID 列表，数组形式
+     * @return Collection
+     */
+    public function itemsByIds($ids)
+    {
+        $idsStr = implode(',', $ids);
+        return $this->httpGet('api/v1/items/by_ids', ['ids' => $idsStr]);
+    }
+
+    /**
      * 车型推荐商品（分类编排）
      * @param string $vehicleId
      * @param array $params
