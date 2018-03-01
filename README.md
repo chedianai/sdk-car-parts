@@ -82,6 +82,9 @@ public function debug()
 
                 // 所有商品列表
                 $app->item->items(),
+		
+		// 根据ids查询所有商品列表
+		$app->item->itemsByIds($ids),
 
                 // 车型推荐商品（分类编排）
                 $app->item->itemsGroupByCategory('b41ba195'),
