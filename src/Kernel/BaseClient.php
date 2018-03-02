@@ -3,9 +3,15 @@
 namespace CarParts\Kernel;
 
 use CarParts\Kernel\Contracts\AccessTokenInterface;
+use CarParts\Kernel\Exceptions\AuthorizationException;
+use CarParts\Kernel\Exceptions\ResourceNotFoundException;
+use CarParts\Kernel\Exceptions\ServiceInvalidException;
+use CarParts\Kernel\Exceptions\ValidationException;
 use CarParts\Kernel\Http\Response;
 use CarParts\Kernel\Traits\HasHttpRequests;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Middleware;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -15,7 +21,9 @@ use Psr\Http\Message\ResponseInterface;
  */
 class BaseClient
 {
-    use HasHttpRequests { request as performRequest; }
+    use HasHttpRequests {
+        request as performRequest;
+    }
 
     /**
      * @var \CarParts\Kernel\ServiceContainer
@@ -108,7 +116,7 @@ class BaseClient
 
         foreach ($files as $name => $path) {
             $multipart[] = [
-                'name' => $name,
+                'name'     => $name,
                 'contents' => fopen($path, 'r'),
             ];
         }
@@ -148,7 +156,11 @@ class BaseClient
      *
      * @return \Psr\Http\Message\ResponseInterface|\CarParts\Kernel\Support\Collection|array|object|string
      *
-     * @throws \CarParts\Kernel\Exceptions\InvalidConfigException
+     * @throws AuthorizationException
+     * @throws Exceptions\InvalidConfigException
+     * @throws ResourceNotFoundException
+     * @throws ServiceInvalidException
+     * @throws ValidationException
      */
     public function request($url, $method = 'GET', array $options = [], $returnRaw = false)
     {
@@ -156,7 +168,35 @@ class BaseClient
             $this->registerHttpMiddlewares();
         }
 
-        $response = $this->performRequest($url, $method, $options);
+        try {
+            $response = $this->performRequest($url, $method, $options);
+        } catch (ClientException $e) {
+            $response = $e->getResponse();
+            $statusCode = $response->getStatusCode();
+            $content = $response->getBody()->getContents();
+            $content = json_decode($content);
+            $message = property_exists($content, 'message') ? $content->message : '';
+
+            switch ($statusCode) {
+                case 404:
+                    throw new ResourceNotFoundException($message, 404);
+                case 400:
+                case 422:
+                    throw new ValidationException($message, 400);
+                    break;
+                case 401:
+                    throw new AuthorizationException($message, 401);
+                default:
+                    throw new ServiceInvalidException($message ? $message : 'Service Invalid', 500);
+            }
+        } catch (ServerException $e) {
+            $response = $e->getResponse();
+            $content = $response->getBody()->getContents();
+            $content = json_decode($content);
+            $message = property_exists($content, 'message') ? $content->message : 'Service Invalid';
+
+            throw new ServiceInvalidException($message, 500);
+        }
 
         return $returnRaw ? $response : $this->castResponseToType($response, $this->app->config->get('response_type'));
     }
