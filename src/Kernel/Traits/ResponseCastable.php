@@ -3,6 +3,7 @@
 namespace CarParts\Kernel\Traits;
 
 use CarParts\Kernel\Contracts\Arrayable;
+use CarParts\Kernel\Contracts\ResponseFormatted;
 use CarParts\Kernel\Exceptions\InvalidArgumentException;
 use CarParts\Kernel\Exceptions\InvalidConfigException;
 use CarParts\Kernel\Http\Response;
@@ -37,14 +38,14 @@ trait ResponseCastable
             case 'raw':
                 return $response;
             default:
-                if (!is_subclass_of($type, Arrayable::class)) {
+                if (!is_subclass_of($type, Arrayable::class) || !is_subclass_of($type, ResponseFormatted::class)) {
                     throw new InvalidConfigException(sprintf(
-                        'Config key "response_type" classname must be an instanceof %s',
-                        Arrayable::class
+                        'Config key "response_type" classname must be an instanceof %s and %s',
+                        Arrayable::class, ResponseFormatted::class
                     ));
                 }
 
-                return new $type($response);
+                return (new $type($response))->format();
         }
     }
 
