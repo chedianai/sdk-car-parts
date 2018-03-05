@@ -23,12 +23,22 @@ class Client extends BaseClient
     /**
      * 根据 ID 列表获取配件列表
      * @param array $ids ID 列表，数组形式
+     * @param bool $withExcluded
      * @return Collection
      */
-    public function itemsByIds($ids)
+    public function itemsByIds($ids, $withExcluded = false)
     {
         $idsStr = implode(',', $ids);
-        return $this->httpGet('api/v1/items/by_ids', ['ids' => $idsStr]);
+
+        $params = [
+            'ids' => $idsStr,
+        ];
+
+        if ($withExcluded) {
+            $params['with_excluded'] = $withExcluded;
+        }
+
+        return $this->httpGet('api/v1/items/by_ids', $params);
     }
 
     /**
