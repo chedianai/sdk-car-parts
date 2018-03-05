@@ -35,9 +35,10 @@ class Client extends BaseClient
      * 车型推荐商品（分类编排）
      * @param string $vehicleId
      * @param array $params
+     * @param bool $withExcluded
      * @return Collection
      */
-    public function itemsGroupByCategory($vehicleId, $categories = [])
+    public function itemsGroupByCategory($vehicleId, $categories = [], $withExcluded = false)
     {
         $params = [
             'vehicle_id' => $vehicleId
@@ -47,6 +48,10 @@ class Client extends BaseClient
 
         if ($categoriesStr) {
             $params['categories'] = $categoriesStr;
+        }
+
+        if ($withExcluded) {
+            $params['with_excluded'] = $withExcluded;
         }
 
         return $this->httpGet('api/v1/items/group_by_category', $params);
