@@ -44,15 +44,14 @@ class Client extends BaseClient
     /**
      * 车型推荐商品（分类编排）
      * @param string $vehicleId
-     * @param array $params
+     * @param array $categories
      * @param bool $withExcluded
+     * @param array $params
      * @return Collection
      */
-    public function itemsGroupByCategory($vehicleId, $categories = [], $withExcluded = false)
+    public function itemsGroupByCategory($vehicleId, $categories = [], $withExcluded = false, $params = [])
     {
-        $params = [
-            'vehicle_id' => $vehicleId
-        ];
+        $params['vehicle_id'] = $vehicleId;
 
         $categoriesStr = implode(',', $categories);
 
